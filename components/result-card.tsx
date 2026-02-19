@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -7,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { StudentResult } from "@/components/search-form";
 import {
@@ -20,6 +22,10 @@ import {
   CircleCheckBig,
   Clock,
   QrCode,
+  Copy,
+  Check,
+  X,
+  Download,
 } from "lucide-react";
 
 interface ResultCardProps {
@@ -87,6 +93,190 @@ function InfoRow({
   );
 }
 
+function CopyableRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }, [value]);
+
+  if (!value) return null;
+
+  return (
+    <div className="flex items-start gap-3 py-2">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+        {icon}
+      </div>
+      <div className="flex flex-1 flex-col gap-1 min-w-0">
+        <span className="text-xs text-muted-foreground">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-foreground break-words">
+            {value}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 shrink-0 gap-1.5 text-xs"
+            onClick={handleCopy}
+          >
+            {copied ? (
+              <>
+                <Check className="h-3 w-3 text-green-600" />
+                <span className="text-green-600">{"Đã copy"}</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                <span>{"Copy"}</span>
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function QrCodeViewer({ src }: { src: string }) {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDownload = useCallback(async () => {
+    try {
+      const response = await fetch(src);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "qrcode-hocphi.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(src, "_blank");
+    }
+  }, [src]);
+
+  return (
+    <>
+      <div className="flex flex-col items-center gap-3 py-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <QrCode className="h-4 w-4" />
+          <span className="text-sm font-medium">QR Code Chuyển Khoản</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowModal(true)}
+          className="group relative cursor-pointer rounded-xl border border-border bg-background p-3 shadow-sm transition-shadow hover:shadow-md"
+          aria-label="Phóng to mã QR"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt="QR Code chuyển khoản học phí"
+            className="h-56 w-56 object-contain"
+            crossOrigin="anonymous"
+          />
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-foreground/0 transition-colors group-hover:bg-foreground/5">
+            <span className="rounded-full bg-card/90 px-3 py-1.5 text-xs font-medium text-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
+              {"Bấm để phóng to"}
+            </span>
+          </div>
+        </button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs"
+            onClick={handleDownload}
+          >
+            <Download className="h-3.5 w-3.5" />
+            {"Tải về"}
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground text-center max-w-xs">
+          Quét mã QR bằng ứng dụng ngân hàng để chuyển khoản
+        </p>
+      </div>
+
+      {showModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4"
+          onClick={() => setShowModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Xem mã QR phóng to"
+        >
+          <div
+            className="relative flex max-h-[90vh] max-w-[90vw] flex-col items-center gap-4 rounded-2xl bg-card p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowModal(false)}
+              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-accent"
+              aria-label="Đóng"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <h3 className="text-base font-semibold text-foreground">
+              QR Code Chuyển Khoản
+            </h3>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt="QR Code chuyển khoản học phí - phóng to"
+              className="max-h-[70vh] max-w-full object-contain"
+              crossOrigin="anonymous"
+            />
+            <div className="flex items-center gap-3">
+              <Button
+                variant="default"
+                size="sm"
+                className="gap-1.5"
+                onClick={handleDownload}
+              >
+                <Download className="h-4 w-4" />
+                {"Tải ảnh về máy"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowModal(false)}
+              >
+                {"Đóng"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function ResultCard({ result, index }: ResultCardProps) {
   return (
     <Card className="border-border/60 shadow-lg overflow-hidden">
@@ -144,7 +334,7 @@ export function ResultCard({ result, index }: ResultCardProps) {
           </div>
         </div>
 
-        <InfoRow
+        <CopyableRow
           icon={<FileText className="h-4 w-4" />}
           label="Nội dung chuyển khoản"
           value={result.ndck}
@@ -158,26 +348,7 @@ export function ResultCard({ result, index }: ResultCardProps) {
         {result.qrCode && (
           <>
             <Separator className="my-2" />
-            <div className="flex flex-col items-center gap-3 py-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <QrCode className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  QR Code Chuyển Khoản
-                </span>
-              </div>
-              <div className="rounded-xl border border-border bg-background p-3 shadow-sm">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={result.qrCode}
-                  alt="QR Code chuyển khoản học phí"
-                  className="h-56 w-56 object-contain"
-                  crossOrigin="anonymous"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground text-center max-w-xs">
-                Quét mã QR bằng ứng dụng ngân hàng để chuyển khoản
-              </p>
-            </div>
+            <QrCodeViewer src={result.qrCode} />
           </>
         )}
       </CardContent>

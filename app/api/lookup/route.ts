@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Validate environment variables
     const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
     const sheetId = process.env.GOOGLE_SHEET_ID;
-    const sheetName = process.env.GOOGLE_SHEET_NAME;
+    const sheetName = process.env.SHEET_NAME;
 
     if (!apiKey || !sheetId || !sheetName) {
       console.error("Missing Google Sheets environment variables");
