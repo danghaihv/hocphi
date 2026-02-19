@@ -98,8 +98,8 @@ export default function HomePage() {
       <footer className="border-t border-border bg-card mt-auto">
         <div className="mx-auto max-w-2xl px-4 py-4">
           <p className="text-xs text-center text-muted-foreground">
-            Hệ thống tra cứu học phí trực tuyến. Mọi thắc mắc xin liên hệ nhà
-            trường.
+            Hệ thống tra cứu học phí trực tuyến. Mọi thắc mắc xin liên hệ giáo
+            viên.
           </p>
         </div>
       </footer>
