@@ -73,18 +73,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const hoTen = sanitize(body.hoTen || "");
     const lop = sanitize(body.lop || "");
-    const soDienThoai = sanitize(body.soDienThoai || "").replace(/\D/g, "");
 
-    if (!hoTen || !lop || !soDienThoai) {
+    if (!hoTen || !lop) {
       return NextResponse.json(
-        { error: "Vui lòng nhập đầy đủ thông tin: Họ tên, Lớp và Số điện thoại." },
-        { status: 400 }
-      );
-    }
-
-    if (soDienThoai.length < 9 || soDienThoai.length > 11) {
-      return NextResponse.json(
-        { error: "Số điện thoại không hợp lệ." },
+        { error: "Vui lòng nhập đầy đủ thông tin: Họ tên và Lớp." },
         { status: 400 }
       );
     }
@@ -123,12 +115,10 @@ export async function POST(request: NextRequest) {
     const results = rows.slice(1).filter((row) => {
       const rowHoTen = normalizeVietnamese(row[0] || "");
       const rowLop = normalizeVietnamese(row[1] || "");
-      const rowPhone = (row[2] || "").replace(/\D/g, "");
 
       return (
         rowHoTen.includes(normalizedHoTen) &&
-        rowLop.includes(normalizedLop) &&
-        rowPhone.includes(soDienThoai)
+        rowLop.includes(normalizedLop)
       );
     });
 
@@ -136,7 +126,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Không tìm thấy thông tin. Vui lòng kiểm tra lại Họ tên, Lớp và Số điện thoại.",
+            "Không tìm thấy thông tin. Vui lòng kiểm tra lại Họ tên và Lớp.",
         },
         { status: 404 }
       );

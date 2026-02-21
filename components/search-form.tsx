@@ -34,25 +34,14 @@ interface SearchFormProps {
 export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
   const [hoTen, setHoTen] = useState("");
   const [lop, setLop] = useState("");
-  const [soDienThoai, setSoDienThoai] = useState("");
   const [loading, setLoading] = useState(false);
-
-  function handlePhoneChange(value: string) {
-    const digitsOnly = value.replace(/\D/g, "").slice(0, 11);
-    setSoDienThoai(digitsOnly);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onClear();
 
-    if (!hoTen.trim() || !lop.trim() || !soDienThoai.trim()) {
+    if (!hoTen.trim() || !lop.trim()) {
       onError("Vui lòng nhập đầy đủ thông tin tra cứu.");
-      return;
-    }
-
-    if (soDienThoai.length < 9) {
-      onError("Số điện thoại phải có ít nhất 9 chữ số.");
       return;
     }
 
@@ -65,7 +54,6 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
         body: JSON.stringify({
           hoTen: hoTen.trim(),
           lop: lop.trim(),
-          soDienThoai: soDienThoai.trim(),
         }),
       });
 
@@ -93,7 +81,7 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
           </div>
           <div>
             <CardTitle className="text-xl text-foreground">
-              Tra Cứu Học Phí
+              Tra cứu học phí lớp thầy Đăng Hải
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               Nhập thông tin để tra cứu học phí của học sinh
@@ -129,26 +117,6 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
               onChange={(e) => setLop(e.target.value)}
               maxLength={20}
               required
-              className="bg-background"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label
-              htmlFor="soDienThoai"
-              className="text-foreground font-medium"
-            >
-              Số điện thoại phụ huynh
-            </Label>
-            <Input
-              id="soDienThoai"
-              type="tel"
-              placeholder="Ví dụ: 0901234567"
-              value={soDienThoai}
-              onChange={(e) => handlePhoneChange(e.target.value)}
-              maxLength={11}
-              required
-              inputMode="numeric"
               className="bg-background"
             />
           </div>

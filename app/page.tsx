@@ -78,20 +78,7 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Security notice */}
-        <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
-          <ShieldCheck className="h-5 w-5 shrink-0 text-primary mt-0.5" />
-          <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium text-foreground">
-              Thông tin được bảo mật
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Số điện thoại được ẩn một phần khi hiển thị. Hệ thống có giới hạn
-              số lần tra cứu để đảm bảo an toàn dữ liệu. Mọi truy vấn đều
-              được xử lý trên máy chủ bảo mật.
-            </p>
-          </div>
-        </div>
+
       </div>
 
       {/* Footer */}
