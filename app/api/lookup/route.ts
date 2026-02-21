@@ -134,17 +134,26 @@ export async function POST(request: NextRequest) {
 
     // Map results
     // Columns: ID (0) | Ho ten (1) | Lop (2) | So buoi (3) | So tien (4) | Ghi chu (5) | Trang thai (6) | QRcode (7)
-    const mappedResults = results.map((row) => ({
-      hoTen: row[1] || "",
-      lop: row[2] || "",
-      soDienThoai: "", // Removed from new schema
-      soBuoi: row[3] || "",
-      soTien: row[4] || "",
-      ndck: "", // Will be removed from display
-      ghiChu: row[5] || "",
-      trangThai: row[6] || "",
-      qrCode: row[7] || "",
-    }));
+    const mappedResults = results.map((row) => {
+      const hoTen = row[1] || "";
+      const lop = row[2] || "";
+      const soTien = row[4] || "";
+      
+      // Auto-generate "nội dung chuyển khoản" from student info
+      const ndck = `Học phí ${hoTen} - Lớp ${lop} - ${soTien}`;
+      
+      return {
+        hoTen: hoTen,
+        lop: lop,
+        soDienThoai: "", // Removed from new schema
+        soBuoi: row[3] || "",
+        soTien: soTien,
+        ndck: ndck,
+        ghiChu: row[5] || "",
+        trangThai: row[6] || "",
+        qrCode: row[7] || "",
+      };
+    });
 
     return NextResponse.json({ results: mappedResults });
   } catch (error) {
