@@ -85,7 +85,7 @@ export default function HomePage() {
       <footer className="border-t border-border bg-card mt-auto">
         <div className="mx-auto max-w-2xl px-4 py-4">
           <p className="text-xs text-center text-muted-foreground">
-            Được tạo bởi <a href="https://tracuuhp.vercel.app/" target="_blank">Hệ thống tra cứu HP</a> 2026
+            Được tạo bởi <a href="https://tracuuhp.vercel.app/" target="_blank" className="text-blue-600 hover:text-blue-800 underline" rel="noopener noreferrer">Hệ thống tra cứu HP</a> năm 2026
           </p>
         </div>
       </footer>
