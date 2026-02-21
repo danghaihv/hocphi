@@ -113,8 +113,8 @@ export async function POST(request: NextRequest) {
     const normalizedLop = normalizeVietnamese(lop);
 
     const results = rows.slice(1).filter((row) => {
-      const rowHoTen = normalizeVietnamese(row[0] || "");
-      const rowLop = normalizeVietnamese(row[1] || "");
+      const rowHoTen = normalizeVietnamese(row[1] || "");
+      const rowLop = normalizeVietnamese(row[2] || "");
 
       return (
         rowHoTen.includes(normalizedHoTen) &&
@@ -132,17 +132,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Map results - mask phone for privacy
+    // Map results
+    // Columns: ID (0) | Ho ten (1) | Lop (2) | So buoi (3) | So tien (4) | Ghi chu (5) | Trang thai (6) | QRcode (7)
     const mappedResults = results.map((row) => ({
-      hoTen: row[0] || "",
-      lop: row[1] || "",
-      soDienThoai: maskPhone(row[2] || ""),
+      hoTen: row[1] || "",
+      lop: row[2] || "",
+      soDienThoai: "", // Removed from new schema
       soBuoi: row[3] || "",
       soTien: row[4] || "",
-      ndck: row[5] || "",
-      ghiChu: row[6] || "",
-      trangThai: row[7] || "",
-      qrCode: row[8] || "",
+      ndck: "", // Will be removed from display
+      ghiChu: row[5] || "",
+      trangThai: row[6] || "",
+      qrCode: row[7] || "",
     }));
 
     return NextResponse.json({ results: mappedResults });

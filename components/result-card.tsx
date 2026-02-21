@@ -310,11 +310,6 @@ export function ResultCard({ result, index }: ResultCardProps) {
           value={result.lop}
         />
         <InfoRow
-          icon={<Phone className="h-4 w-4" />}
-          label="Số điện thoại PH"
-          value={result.soDienThoai}
-        />
-        <InfoRow
           icon={<Calendar className="h-4 w-4" />}
           label="Số buổi"
           value={result.soBuoi}
@@ -334,11 +329,6 @@ export function ResultCard({ result, index }: ResultCardProps) {
           </div>
         </div>
 
-        <CopyableRow
-          icon={<FileText className="h-4 w-4" />}
-          label="Nội dung chuyển khoản"
-          value={result.ndck}
-        />
         <InfoRow
           icon={<MessageSquare className="h-4 w-4" />}
           label="Ghi chú"
