@@ -30,11 +30,26 @@ function sanitize(input: string): string {
 }
 
 function normalizeVietnamese(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize("NFC")
-    .replace(/\s+/g, " ")
-    .trim();
+  // Convert to lowercase and normalize Unicode
+  let normalized = str.toLowerCase().normalize("NFD");
+  
+  // Remove diacritical marks (accents)
+  normalized = normalized.replace(/[\u0300-\u036f]/g, "");
+  
+  // Map common Vietnamese character issues
+  const replacements: { [key: string]: string } = {
+    "đ": "d",
+    "ð": "d",
+  };
+  
+  for (const [from, to] of Object.entries(replacements)) {
+    normalized = normalized.split(from).join(to);
+  }
+  
+  // Normalize whitespace
+  normalized = normalized.replace(/\s+/g, " ").trim();
+  
+  return normalized;
 }
 
 function maskPhone(phone: string): string {
