@@ -112,7 +112,7 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
             </Label>
             <Input
               id="lop"
-              placeholder="Ví dụ: 6A1"
+              placeholder="Ví dụ: 6T1"
               value={lop}
               onChange={(e) => setLop(e.target.value)}
               maxLength={20}
