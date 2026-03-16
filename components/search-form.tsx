@@ -81,7 +81,7 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
           </div>
           <div>
             <CardTitle className="text-xl text-foreground">
-              Tra cứu học phí lớp thầy Đăng Hải
+              Tra cứu học phí
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               Nhập thông tin để tra cứu học phí của học sinh
@@ -112,7 +112,7 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
             </Label>
             <Input
               id="lop"
-              placeholder="Ví dụ: 6A1"
+              placeholder="Ví dụ: HSG7"
               value={lop}
               onChange={(e) => setLop(e.target.value)}
               maxLength={20}
