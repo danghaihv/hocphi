@@ -108,11 +108,11 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="lop" className="text-foreground font-medium">
-              Lớp
+              Lớp học thêm
             </Label>
             <Input
               id="lop"
-              placeholder="Ví dụ: 6A1"
+              placeholder="Ví dụ: 6T3"
               value={lop}
               onChange={(e) => setLop(e.target.value)}
               maxLength={20}
