@@ -108,7 +108,7 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="lop" className="text-foreground font-medium">
-              Lớp học thêm
+              Lớp đang theo học thêm
             </Label>
             <Input
               id="lop"
