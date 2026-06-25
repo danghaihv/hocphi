@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { google } from "googleapis";
 
 // Simple in-memory rate limiter
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -72,11 +73,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate environment variables
-    const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
+    const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
     const sheetId = process.env.GOOGLE_SHEET_ID;
     const sheetName = process.env.SHEET_NAME;
 
-    if (!apiKey || !sheetId || !sheetName) {
+    if (!serviceAccountKey || !sheetId || !sheetName) {
       console.error("Missing Google Sheets environment variables");
       return NextResponse.json(
         { error: "Hệ thống chưa được cấu hình. Vui lòng liên hệ quản trị viên." },
@@ -96,25 +97,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch data from Google Sheets
-    const encodedSheetName = encodeURIComponent(sheetName);
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodedSheetName}?key=${apiKey}`;
-
-    const response = await fetch(url, {
-      next: { revalidate: 60 },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Google Sheets API error:", response.status, errorText);
+    // Initialize Service Account Authentication
+    let serviceAccountJson;
+    try {
+      serviceAccountJson = JSON.parse(serviceAccountKey);
+    } catch (e) {
+      console.error("Invalid Service Account JSON:", e);
       return NextResponse.json(
-        { error: "Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau." },
-        { status: 502 }
+        { error: "Hệ thống chưa được cấu hình đúng. Vui lòng liên hệ quản trị viên." },
+        { status: 500 }
       );
     }
 
-    const data = await response.json();
-    const rows: string[][] = data.values || [];
+    const auth = new google.auth.GoogleAuth({
+      credentials: serviceAccountJson,
+      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+    });
+
+    const sheets = google.sheets({ version: "v4", auth });
+
+    // Fetch data from Google Sheets using Service Account
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: sheetId,
+      range: sheetName,
+    });
+
+    const rows: string[][] = response.data.values || [];
 
     if (rows.length < 2) {
       return NextResponse.json(
