@@ -81,7 +81,7 @@ export function SearchForm({ onResults, onError, onClear }: SearchFormProps) {
           </div>
           <div>
             <CardTitle className="text-xl text-foreground">
-              Tra cứu học phí lớp thầy Đăng Hải
+              Tra cứu học phí trung tâm Á Châu
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               Nhập thông tin để tra cứu học phí của học sinh
