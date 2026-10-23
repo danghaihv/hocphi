@@ -165,6 +165,24 @@ function QrCodeViewer({ src }: { src: string }) {
   const [imageFailed, setImageFailed] = useState(false);
   const imageSrc = `/api/qr?url=${encodeURIComponent(src)}`;
 
+  const handleDownload = useCallback(async () => {
+    try {
+      const response = await fetch(imageSrc);
+      if (!response.ok) throw new Error("QR image request failed");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "qrcode-hocphi.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(src, "_blank", "noopener,noreferrer");
+    }
+  }, [imageSrc, src]);
+
   if (imageFailed) {
     return (
       <div className="flex flex-col items-center gap-3 py-4">
@@ -178,23 +196,6 @@ function QrCodeViewer({ src }: { src: string }) {
       </div>
     );
   }
-
-  const handleDownload = useCallback(async () => {
-    try {
-      const response = await fetch(imageSrc);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "qrcode-hocphi.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch {
-      window.open(src, "_blank");
-    }
-  }, [src]);
 
   return (
     <>
