@@ -162,10 +162,26 @@ function CopyableRow({
 
 function QrCodeViewer({ src }: { src: string }) {
   const [showModal, setShowModal] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = `/api/qr?url=${encodeURIComponent(src)}`;
+
+  if (imageFailed) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <QrCode className="h-4 w-4" />
+          <span className="text-sm font-medium">QR Code Chuyển Khoản</span>
+        </div>
+        <div className="flex h-56 w-56 items-center justify-center rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-center text-sm text-destructive">
+          Không thể tải mã QR. Vui lòng thử lại hoặc kiểm tra lại đường dẫn ảnh trong bảng dữ liệu.
+        </div>
+      </div>
+    );
+  }
 
   const handleDownload = useCallback(async () => {
     try {
-      const response = await fetch(src);
+      const response = await fetch(imageSrc);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -195,10 +211,10 @@ function QrCodeViewer({ src }: { src: string }) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={src}
+            src={imageSrc}
             alt="QR Code chuyển khoản học phí"
             className="h-56 w-56 object-contain"
-            crossOrigin="anonymous"
+            onError={() => setImageFailed(true)}
           />
           <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-foreground/0 transition-colors group-hover:bg-foreground/5">
             <span className="rounded-full bg-card/90 px-3 py-1.5 text-xs font-medium text-foreground opacity-0 shadow-sm transition-opacity group-hover:opacity-100">
@@ -247,10 +263,10 @@ function QrCodeViewer({ src }: { src: string }) {
             </h3>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={src}
+              src={imageSrc}
               alt="QR Code chuyển khoản học phí - phóng to"
               className="max-h-[70vh] max-w-full object-contain"
-              crossOrigin="anonymous"
+              onError={() => setImageFailed(true)}
             />
             <div className="flex items-center gap-3">
               <Button
